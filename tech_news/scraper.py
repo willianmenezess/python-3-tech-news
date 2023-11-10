@@ -2,6 +2,7 @@ import requests
 import time
 from bs4 import BeautifulSoup
 from typing import List
+from tech_news.database import create_news
 
 
 # Requisito 1
@@ -48,7 +49,7 @@ def scrape_next_page_link(html_content):
 
 # Requisito 4
 def scrape_news(html_content):
-    """Seu código deve vir aqui"""
+    """Função que retorna detalhes de uma notícia"""
     bs = BeautifulSoup(html_content, "html.parser")
     url = bs.find("link", {"rel": "canonical"})["href"]
     title = bs.find("h1", {"class": "entry-title"}).text.strip()
@@ -69,10 +70,30 @@ def scrape_news(html_content):
     }
 
 
+def scrape_all_links(url, amount):
+    """Função que retorna todas as urls das últimas noticias"""
+    next_page = url
+    all_links_news = []
+    need_more_links = True
+    while next_page and need_more_links:
+        html = fetch(next_page)
+        all_links_news.extend(scrape_updates(html))
+        need_more_links = amount > len(all_links_news)
+        next_page = scrape_next_page_link(html)
+    return all_links_news
+
+
 # Requisito 5
 def get_tech_news(amount):
-    """Seu código deve vir aqui"""
-    raise NotImplementedError
+    """Retorna os detalhes das últimas X(amount) notícias"""
+    initial_page = "https://blog.betrybe.com/"
+    all_links_news = scrape_all_links(initial_page, amount)
+    last_news_details = []
+    for link in all_links_news[0:amount]:
+        html = fetch(link)
+        last_news_details.append(scrape_news(html))
+    create_news(last_news_details)
+    return last_news_details
 
 
 if __name__ == "__main__":
@@ -80,5 +101,7 @@ if __name__ == "__main__":
     html = fetch(url)
     # print(scrape_updates(html))
     # print(scrape_next_page_link(html))
-    html_new_detail = fetch("https://blog.betrybe.com/tecnologia/code-review/")
-    print(scrape_news(html_new_detail))
+    # html_new_detail = fetch(
+    # "https://blog.betrybe.com/tecnologia/code-review/")
+    # print(scrape_news(html_new_detail))
+    print(get_tech_news(4))
