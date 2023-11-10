@@ -2,7 +2,7 @@ import requests
 import time
 from bs4 import BeautifulSoup
 from typing import List
-from tech_news.database import create_news
+from tech_news.database import create_news, find_news
 
 
 # Requisito 1
@@ -104,4 +104,6 @@ if __name__ == "__main__":
     # html_new_detail = fetch(
     # "https://blog.betrybe.com/tecnologia/code-review/")
     # print(scrape_news(html_new_detail))
-    print(get_tech_news(4))
+    get_tech_news(4)
+    # testando o acesso ao banco de dados
+    print(find_news())
