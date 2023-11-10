@@ -37,7 +37,7 @@ def scrape_updates(html_content: str) -> List[str]:
 
 # Requisito 3
 def scrape_next_page_link(html_content):
-    """Seu código deve vir aqui"""
+    """Função que retorna o link para a próxima página"""
     bs = BeautifulSoup(html_content, "html.parser")
     next_page = bs.find("a", {"class": "next page-numbers"})
     if next_page:
@@ -49,7 +49,24 @@ def scrape_next_page_link(html_content):
 # Requisito 4
 def scrape_news(html_content):
     """Seu código deve vir aqui"""
-    raise NotImplementedError
+    bs = BeautifulSoup(html_content, "html.parser")
+    url = bs.find("link", {"rel": "canonical"})["href"]
+    title = bs.find("h1", {"class": "entry-title"}).text.strip()
+    timestamp = bs.find("li", {"class": "meta-date"}).text
+    writer = bs.find("h5", {"class": "title-author"}).find("a").text.strip()
+    reading_time = bs.find("li", {"class": "meta-reading-time"}).text
+    reading_time_number = int(reading_time.split(" ")[0])
+    summary = bs.find("div", {"class": "entry-content"}).find("p").text.strip()
+    category = bs.find("span", {"class": "label"}).text
+    return {
+        "url": url,
+        "title": title,
+        "timestamp": timestamp,
+        "writer": writer,
+        "reading_time": reading_time_number,
+        "summary": summary,
+        "category": category
+    }
 
 
 # Requisito 5
@@ -61,4 +78,7 @@ def get_tech_news(amount):
 if __name__ == "__main__":
     url = "https://blog.betrybe.com"
     html = fetch(url)
-    print(scrape_updates(html))
+    # print(scrape_updates(html))
+    # print(scrape_next_page_link(html))
+    html_new_detail = fetch("https://blog.betrybe.com/tecnologia/code-review/")
+    print(scrape_news(html_new_detail))
