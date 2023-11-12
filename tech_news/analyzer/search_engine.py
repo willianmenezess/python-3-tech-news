@@ -49,5 +49,5 @@ def search_by_category(category):
 
 
 if __name__ == "__main__":
-    print(search_by_date("2018-11-21"))
+    # print(search_by_date("2018-11-21"))
     print(search_by_category("Ferramentas"))
