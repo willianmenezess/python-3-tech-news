@@ -1,17 +1,8 @@
-from tech_news.database import db
+from tech_news.database import db, search_news
 from datetime import datetime
 
 
 # Requisito 7
-# Deve retornar uma lista de tuplas como no exemplo abaixo:
-# [
-#   ("Título1_aqui", "url1_aqui"),
-#   ("Título2_aqui", "url2_aqui"),
-#   ("Título3_aqui", "url3_aqui"),
-# ]
-# A busca deve ser case insensitive
-
-
 def search_by_title(title):
     """Recebe o título da notícia como parametro e retorna
     uma lista de tuplas com as notícias encontradas no DB."""
@@ -44,18 +35,19 @@ def search_by_date(date):
         raise ValueError("Data inválida")
     # invertendo a data para o formato dd/mm/yyyy
     new_date = datetime.strptime(date, date_format).strftime("%d/%m/%Y")
-    searched_news = db.news.find(
-            {"timestamp": {"$regex": new_date}},
-            {"title": 1, "url": 1, "_id": 0},
-        )
+    query = {"timestamp": {"$regex": new_date}}
+    searched_news = search_news(query)
     return [(news["title"], news["url"]) for news in searched_news]
 
 
 # Requisito 9
 def search_by_category(category):
     """Seu código deve vir aqui"""
-    raise NotImplementedError
+    query = {"category": {"$regex": category, "$options": "i"}}
+    searched_news = search_news(query)
+    return [(news["title"], news["url"]) for news in searched_news]
 
 
 if __name__ == "__main__":
     print(search_by_date("2018-11-21"))
+    print(search_by_category("Ferramentas"))
